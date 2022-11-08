@@ -1,55 +1,41 @@
-import { useState } from 'react';
 import { Book } from './components/Book';
 import { Nav } from './components/Nav';
-
-const SampleData = {
-  books: [
-    {
-      id: 1,
-      title: 'Private Book',
-      marks: [
-        {
-          id: 1,
-          title: 'Mark Title...',
-          image: 'https://tailwindcss.com/api/og?path=/docs/stroke-width',
-          description: 'mark description',
-        },
-        {
-          id: 2,
-          title: 'Mark Title2...',
-          image: 'https://tailwindcss.com/api/og?path=/docs/stroke-width',
-          description: 'mark description2',
-        },
-      ],
-    },
-    { id: 2, title: 'React Study', marks: [] },
-    { id: 3, title: 'JS Study', marks: [] },
-  ],
-};
+import { useData } from './hooks/data-context';
 
 function App() {
-  const [data, setData] = useState(SampleData);
+  const { data, addBook } = useData();
 
   return (
-    <div>
+    <div className='bg-cyan-100x h-screen  w-full overflow-y-hidden overflow-x-scroll'>
       <header>
         <Nav />
       </header>
 
-      <main className='justify - start px - 6 container mx-auto mt-5 flex max-w-full space-y-0 overflow-scroll'>
-        {data.books.map((book) => (
-          <Book key={book.id} book={book} />
-        ))}
-        <div>
-          <button className='md: - 0 shrink rounded-sm bg-emerald-500 px-5 py-1 font-medium text-white hover:bg-emerald-700'>
-            + Add book
-          </button>
+      <main>
+        <div className='flex items-start p-4'>
+          {data.books
+            .sort((a, b) =>
+              a.id === 0 ? Number.MAX_SAFE_INTEGER : a.id - b.id
+            )
+            .map((book) => (
+              <Book key={book.id} book={book} />
+            ))}
+          <div>
+            {data.books.find((book) => !book.id) ? (
+              ''
+            ) : (
+              <button
+                onClick={addBook}
+                className='mr-2 w-64 rounded-sm bg-cyan-400 px-5 py-1 font-medium text-white hover:bg-cyan-500'
+              >
+                + Add Book
+              </button>
+            )}
+          </div>
         </div>
-
       </main>
-      {/* <footer>
-        Copyright Indiflex Jeje Cording
-      </footer> */}
+
+      <footer>Copy?right Indiflex Senior Coding</footer>
     </div>
   );
 }
