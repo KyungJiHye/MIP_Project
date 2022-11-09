@@ -13,16 +13,16 @@ export const Mark = ({ book, mark }) => {
   const urlRef = useRef();
 
   const scrapOg = async (url) => {
-    const html = await ky(`https://proxy.cors.sh/${url}`).text();
-    // const html = await ky(`https://cors-anywhere.herokuapp.com/${url}`).text();
-    // console.log('html>>', html);
-    const ogs = html.match(/<meta property="og:(.*?)>/gi);
-    console.log(ogs);
-    const kv = ogs.map((og) =>
-      og.match(/["|'](.*?)["|']/g).map((s) => s.replace(/(["|']|(og:))/g, ''))
-    );
-    console.log('kv>>', kv);
-    return Object.fromEntries(kv);
+    // const html = await ky(`https://sz.topician.com/sz/proxy?url=${url}`).text();
+    // // const html = await ky(`https://cors-anywhere.herokuapp.com/${url}`).text();
+    // // console.log('html>>', html);
+    // const ogs = html.match(/<meta property="og:(.*?)>/gi);
+    // console.log(ogs);
+    // const kv = ogs.map((og) =>
+    //   og.match(/["|'](.*?)["|']/g).map((s) => s.replace(/(["|']|(og:))/g, ''))
+    // );
+    // console.log('kv>>', kv);
+    return await ky(`https://sz.topician.com/sz/proxy?url=${url}`).json();
   };
 
   const save = (evt) => {
