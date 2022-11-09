@@ -6,8 +6,54 @@ const SampleData = {
   books: [
     {
       id: 1,
-      title: 'My Private Book',
-      marks: [],
+      title: 'Movie',
+      marks: [
+        {
+          id: 1,
+          title: '어벤져스',
+          image:
+            'https://upload.wikimedia.org/wikipedia/ko/thumb/f/f2/%EC%96%B4%EB%B2%A4%EC%A0%B8%EC%8A%A4-_%EC%97%94%EB%93%9C%EA%B2%8C%EC%9E%84_%ED%8F%AC%EC%8A%A4%ED%84%B0.jpg/800px-%EC%96%B4%EB%B2%A4%EC%A0%B8%EC%8A%A4-_%EC%97%94%EB%93%9C%EA%B2%8C%EC%9E%84_%ED%8F%AC%EC%8A%A4%ED%84%B0.jpg',
+          description: '재밌었다 아이언맨 채고>.<',
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: 'Drama',
+      marks: [
+        {
+          id: 2,
+          title: '',
+          marks: [
+            {
+              id: 2,
+              title: '비밀의숲',
+              image:
+                'https://upload.wikimedia.org/wikipedia/ko/4/4c/%EB%93%9C%EB%9D%BC%EB%A7%88_%EB%B9%84%EB%B0%80%EC%9D%98_%EC%88%B2_%EB%8C%80%ED%91%9C_%ED%8F%AC%EC%8A%A4%ED%84%B0.jpg',
+              description: '이게 그렇게 재밌다던데',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 3,
+      title: 'Music',
+      marks: [
+        {
+          id: 3,
+          title: '',
+          marks: [
+            {
+              id: 3,
+              title: 'Ella fitzgerald - Misty',
+              image:
+                'https://i1.sndcdn.com/artworks-000116410667-8amk4j-t500x500.jpg',
+              description: '최애노래',
+            },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -45,16 +91,6 @@ const reducer = (data, action) => {
         ...data,
       };
       break;
-
-    // case 'save-mark':
-    //   newData = {
-    //     ...data,
-    //     books: [
-    //       ...data.books.filter((_book) => _book.id !== action.payload.id),
-    //       action.payload,
-    //     ],
-    //   };
-    //   break;
 
     case 'remove-mark':
       newData = {
