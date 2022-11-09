@@ -11,6 +11,12 @@ function App() {
         <Nav />
       </header>
 
+      {/* <Book
+                key={book.id}
+                book={book}
+                saveBook={saveBook}
+                removeBook={removeBook}
+              /> */}
       <main>
         <div className='flex items-start p-4'>
           {data.books
@@ -35,7 +41,9 @@ function App() {
         </div>
       </main>
 
-      <footer>Copy?right Indiflex Senior Coding</footer>
+      <footer className='text-center text-slate-500'>
+        &#169; Indiflex - Senior Coding 2022
+      </footer>
     </div>
   );
 }

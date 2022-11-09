@@ -1,4 +1,9 @@
-import { TrashIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import {
+  TrashIcon,
+  PencilSquareIcon,
+  ArrowUturnLeftIcon,
+} from '@heroicons/react/24/outline';
+import ky from 'ky';
 import { useEffect, useReducer, useRef } from 'react';
 import { useData } from '../hooks/data-context';
 
@@ -7,15 +12,47 @@ export const Mark = ({ book, mark }) => {
   const [isEditing, toggleEditing] = useReducer((pre) => !pre, !mark.id);
   const urlRef = useRef();
 
-  const save = () => {
+  const scrapOg = async (url) => {
+    const html = await ky(url).text();
+    // const html = await ky(`https://cors-anywhere.herokuapp.com/${url}`).text();
+    // console.log('html>>', html);
+    const ogs = html.match(/<meta property="og:(.*?)>/gi);
+    console.log(ogs);
+    const kv = ogs.map((og) =>
+      og.match(/["|'](.*?)["|']/g).map((s) => s.replace(/(["|']|(og:))/g, ''))
+    );
+    console.log('kv>>', kv);
+    return Object.fromEntries(kv);
+  };
+
+  const save = (evt) => {
+    evt.stopPropagation();
+
     if (isEditing) {
+      const url = urlRef.current.value;
       mark.image = null;
-      mark.title = 'ttt';
-      mark.description = 'ddd';
-      mark.url = urlRef.current.value;
-      saveMark(book, mark);
+      mark.title = 'TTT';
+      mark.description = 'DDD';
+      mark.url = url;
+      scrapOg(url).then((ogRet) => {
+        console.log('ogRet>>>', ogRet);
+        mark.title = ogRet.title || 'No Title';
+        mark.image = ogRet.image;
+        mark.description = ogRet.description;
+        saveMark(book, mark);
+      });
     }
     toggleEditing();
+  };
+
+  const remove = (evt) => {
+    evt.stopPropagation();
+    if (confirm('ㄹㅇ삭제?')) removeMark(book, mark.id);
+  };
+
+  const openSite = () => {
+    // console.log('openSite!!>>>', mark);
+    if (!isEditing) window.open(mark.url, '_blank');
   };
 
   useEffect(() => {
@@ -24,7 +61,11 @@ export const Mark = ({ book, mark }) => {
   }, [isEditing]);
 
   return (
-    <div className='mb-1 box-border border-2 border-emerald-400'>
+    <div
+      onClick={openSite}
+      aria-hidden='true'
+      className='group mb-1 box-border cursor-pointer rounded border-2 border-cyan-400 bg-slate-50 p-1 hover:bg-slate-200'
+    >
       {isEditing ? (
         <>
           <input
@@ -39,33 +80,48 @@ export const Mark = ({ book, mark }) => {
           <div>
             {mark.image && (
               <img
-                alt={mark.title}
                 src={mark.image}
+                alt={mark.title}
                 className='max-h-[100px] w-full'
               />
             )}
           </div>
-          <h3 className='m-1 font-medium text-slate-700'>
-            {mark.id}.{mark.title}
+          <h3 className='m-1 truncate font-medium text-slate-700'>
+            {mark.title}
           </h3>
-          <p className='m-1 text-sm text-gray-500'> {mark.description} </p>
+          <p className='rounded0 m-1 truncate text-sm text-slate-500'>
+            {mark.description}
+          </p>
         </div>
       )}
-      {/* 수정 삭제를 붙일거다 */}
-      <div className='item-center mr-3 flex justify-end'>
+      <div
+        className={`item-center mr-3 ${
+          isEditing ? 'flex' : 'hidden'
+        } justify-end group-hover:flex`}
+      >
         <button
           onClick={save}
-          className='mb-1 mr-1 rounded-full bg-emerald-500 p-2 hover:bg-emerald-700'
+          className='mb-1 mr-1 rounded-full bg-cyan-400 p-2 hover:bg-cyan-600'
         >
           <PencilSquareIcon className='h-4 text-white' />
         </button>
-
         <button
-          onClick={() => removeMark(book, mark.id)}
-          className='mb-1 mr-1 rounded-full bg-rose-500 p-2 hover:bg-rose-700'
+          onClick={remove}
+          className='mb-1 rounded-full bg-rose-400 p-2 hover:bg-rose-500'
         >
           <TrashIcon className='h-4 text-white' />
         </button>
+        {isEditing && (
+          <button
+            onClick={(evt) => {
+              evt.stopPropagation();
+              toggleEditing();
+            }}
+            className='mx-1 mb-1 rounded-full bg-slate-300 p-2 hover:bg-slate-500'
+          >
+            <ArrowUturnLeftIcon className='h-4 text-white' />
+          </button>
+        )}
       </div>
     </div>
   );

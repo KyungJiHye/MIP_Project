@@ -4,11 +4,11 @@ import { Mark } from './Mark';
 import { useData } from '../hooks/data-context';
 
 export const Book = ({ book }) => {
-  const { saveBook, removeBook, addMark } = useData();
+  const { saveBook, removeBook, addMark, searchStr } = useData();
   const [bookTitle, setBookTitle] = useState(book.title);
   const [isEditing, toggleEditing] = useReducer((pre) => !pre, false);
 
-  const changeBookTilte = () => {
+  const changeBookTitle = () => {
     book.title = bookTitle;
     saveBook(book);
     toggleEditing();
@@ -18,45 +18,51 @@ export const Book = ({ book }) => {
     <div className='mr-3 w-64 flex-shrink-0 rounded bg-gray-200 p-1.5'>
       <div className='xs:h-[78vh] h-[76vh] overflow-y-scroll sm:h-[80vh] md:h-[82vh] xl:h-[84vh]'>
         <div className='flex items-center justify-between text-xl font-bold text-slate-700'>
-          <h3>{book.title}</h3>
+          <h3 className='truncate'>{book?.title}</h3>
           <button
             onClick={toggleEditing}
-            className='text-sm text-emerald-500 hover:text-emerald-700'
+            className='text-sm text-cyan-400 hover:text-cyan-600'
           >
             {isEditing ? (
-              <ArrowPathIcon className='w-5 text-emerald-500' />
+              <ArrowPathIcon className='w-5 text-cyan-400' />
             ) : (
-              <Cog8ToothIcon className='w-5 text-emerald-500' />
+              <Cog8ToothIcon className='w-5 text-cyan-400' />
             )}
           </button>
         </div>
 
         {book?.id === 0 || isEditing ? (
-          <div className='px-1.5'>
+          <div className='p-1.5'>
             <input
               type='text'
               value={bookTitle}
               onChange={(evt) => setBookTitle(evt.target.value)}
               className='w-full rounded px-1'
-              placeholder='타이틀..'
+              placeholder='타이틀...'
             />
             <button
               onClick={() => removeBook(book.id)}
-              className='float-left text-rose-500 hover:text-rose-700'
+              className='float-left text-rose-400 hover:text-rose-600'
             >
               Remove
             </button>
             <button
-              onClick={changeBookTilte}
-              className='text-emerald-500-500 hover:text-emerald-700-700 float-right'
+              onClick={changeBookTitle}
+              className='float-right text-cyan-400 hover:text-cyan-600'
             >
               Save
             </button>
           </div>
         ) : book?.marks?.length ? (
-          book?.marks.map((mark) => (
-            <Mark key={mark.id} book={book} mark={mark} />
-          ))
+          // book?.marks.filter(mark => `${mark.url} ${mark.title}`).map((mark) => (
+          book?.marks
+            .filter((mark) =>
+              // mark.title.toLowerCase().includes(searchStr.toLowerCase())
+              RegExp(searchStr, 'i').exec(
+                `${mark.url} ${mark.title} ${mark.description}`
+              )
+            )
+            .map((mark) => <Mark key={mark.id} book={book} mark={mark} />)
         ) : (
           <hr className='border-3 mt-0 mb-3 border-white' />
         )}
