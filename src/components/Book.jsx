@@ -54,10 +54,8 @@ export const Book = ({ book }) => {
             </button>
           </div>
         ) : book?.marks?.length ? (
-          // book?.marks.filter(mark => `${mark.url} ${mark.title}`).map((mark) => (
           book?.marks
             .filter((mark) =>
-              // mark.title.toLowerCase().includes(searchStr.toLowerCase())
               RegExp(searchStr, 'i').exec(
                 `${mark.url} ${mark.title} ${mark.description}`
               )

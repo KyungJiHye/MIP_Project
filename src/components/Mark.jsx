@@ -13,8 +13,9 @@ export const Mark = ({ book, mark }) => {
   const urlRef = useRef();
 
   const scrapOg = async (url) => {
+    // const html = await ky(url).text();
     // const html = await ky(`https://sz.topician.com/sz/proxy?url=${url}`).text();
-    // // const html = await ky(`https://cors-anywhere.herokuapp.com/${url}`).text();
+    // const html = await ky(`https://sz.topician.com/sz/proxy?url=${url}`).text();
     // // console.log('html>>', html);
     // const ogs = html.match(/<meta property="og:(.*?)>/gi);
     // console.log(ogs);
@@ -22,6 +23,7 @@ export const Mark = ({ book, mark }) => {
     //   og.match(/["|'](.*?)["|']/g).map((s) => s.replace(/(["|']|(og:))/g, ''))
     // );
     // console.log('kv>>', kv);
+    // return Object.fromEntries(kv);
     return await ky(`https://sz.topician.com/sz/proxy?url=${url}`).json();
   };
 
@@ -31,23 +33,29 @@ export const Mark = ({ book, mark }) => {
     if (isEditing) {
       const url = urlRef.current.value;
       mark.image = null;
-      mark.title = 'TTT';
-      mark.description = 'DDD';
+      mark.title = 'Fetching...';
+      mark.description = '';
       mark.url = url;
-      scrapOg(url).then((ogRet) => {
-        console.log('ogRet>>>', ogRet);
-        mark.title = ogRet.title || 'No Title';
-        mark.image = ogRet.image;
-        mark.description = ogRet.description;
-        saveMark(book, mark);
-      });
+      scrapOg(url)
+        .then((ogRet) => {
+          console.log('ogRet>>>', ogRet);
+          mark.title = ogRet.title || 'No Title';
+          mark.image = ogRet.image;
+          mark.description = ogRet.description;
+          saveMark(book, mark);
+        })
+        .catch((error) => {
+          mark.title = 'ERROR!! ' + error.message;
+          mark.description = 'Please remove this!';
+          saveMark(book, mark);
+        });
     }
     toggleEditing();
   };
 
   const remove = (evt) => {
     evt.stopPropagation();
-    if (confirm('ㄹㅇ삭제?')) removeMark(book, mark.id);
+    if (confirm('정말 삭제시겠어요?')) removeMark(book, mark.id);
   };
 
   const openSite = () => {
@@ -77,12 +85,12 @@ export const Mark = ({ book, mark }) => {
         </>
       ) : (
         <div>
-          <div>
+          <div className='flex justify-center'>
             {mark.image && (
               <img
                 src={mark.image}
                 alt={mark.title}
-                className='max-h-[100px] w-full'
+                className='max-h-[100px]'
               />
             )}
           </div>
