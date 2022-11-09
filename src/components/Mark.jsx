@@ -64,8 +64,7 @@ export const Mark = ({ book, mark }) => {
   };
 
   useEffect(() => {
-    if (urlRef.current)
-      urlRef.current.value = mark.url || 'https://tailwindcss.com';
+    if (urlRef.current) urlRef.current.value = mark.url || 'https:';
   }, [isEditing]);
 
   return (
